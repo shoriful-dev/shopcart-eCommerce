@@ -134,6 +134,33 @@ const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
 "brandName": brand->title
 }`);
 
+const SEARCH_PRODUCTS_QUERY = defineQuery(
+  `*[_type == "product" && (
+    lower(name) match lower($query) || 
+    lower(description) match lower($query) ||
+    lower(brand->title) match lower($query)
+  )] | order(name asc) {
+    _id,
+    name,
+    slug,
+    images,
+    price,
+    description,
+    discount,
+    stock,
+    status,
+    variant,
+    brand->{
+      _id,
+      title
+    },
+    categories[]->{
+      _id,
+      title
+    }
+  }`
+);
+
 export {
   BANNER_QUERY,
   FEATURED_CATEGORY_QUERY,
@@ -153,4 +180,5 @@ export {
   RELATED_PRODUCTS_QUERY,
   BRAND_QUERY,
   MY_ORDERS_QUERY,
+  SEARCH_PRODUCTS_QUERY,
 };

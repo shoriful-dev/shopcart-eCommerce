@@ -19,6 +19,7 @@ import {
   PRODUCT_BY_SLUG_QUERY,
   // RELATED_PRODUCTS_QUERY,
   SINGLE_BLOG_QUERY,
+  SEARCH_PRODUCTS_QUERY,
 } from './query';
 
 // import { getOrderById } from './userQueries';
@@ -392,6 +393,24 @@ const getMyOrders = unstable_cache(
 //   { revalidate: 900, tags: ['products'] }
 // );
 
+const searchProducts = unstable_cache(
+  async (query: string) => {
+    try {
+      const searchPattern = `*${query}*`;
+      const { data } = await sanityFetch({
+        query: SEARCH_PRODUCTS_QUERY,
+        params: { query: searchPattern },
+      });
+      return data ?? [];
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      return [];
+    }
+  },
+  ['search-products'],
+  { revalidate: 60, tags: ['products'] }
+);
+
 export {
   // getBanner,
   // getFeaturedCategory,
@@ -412,4 +431,5 @@ export {
   getMyOrders,
   // getRelatedProducts,
   // getOrderById,
+  searchProducts,
 };
